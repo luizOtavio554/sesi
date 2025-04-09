@@ -1,0 +1,70 @@
+<!-- todos.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Todos os Planos</title>
+  <style>
+    body { font-family: Arial; background: #f0f2f5; padding: 20px; }
+    .plano { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 0 8px #ccc; }
+    .autor { font-weight: bold; color: #2a61d6; }
+    .avaliar { margin-top: 10px; }
+    button { padding: 6px 12px; margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Planos de Aula da Comunidade</h2>
+  <div id="listaPlanos"></div>
+
+  <script>
+    const usuarioAtual = localStorage.getItem("usuario") || "Desconhecido";
+    const planos = JSON.parse(localStorage.getItem("planos") || "[]");
+
+    function renderPlanos() {
+      const container = document.getElementById("listaPlanos");
+      container.innerHTML = "";
+
+      planos.forEach((plano, index) => {
+        const div = document.createElement("div");
+        div.className = "plano";
+
+        div.innerHTML = `
+        <a class="ver" href="plano.html?id=${plano.id}">Ver Plano</a>
+          <div class="autor">Autor: ${plano.autor}</div>
+          <p>${plano.conteudo}</p>
+          <div><strong>Avaliações:</strong> ${plano.avaliacao}</div>
+        `;
+
+        // Só mostra botões de avaliação se não for o autor
+        if (plano.autor !== usuarioAtual) {
+          const btnMais = document.createElement("button");
+          btnMais.textContent = "Curtir";
+          btnMais.onclick = () => {
+            planos[index].avaliacao++;
+            localStorage.setItem("planos", JSON.stringify(planos));
+            renderPlanos();
+          };
+
+          const btnMenos = document.createElement("button");
+          btnMenos.textContent = "Não curtir";
+          btnMenos.onclick = () => {
+            planos[index].avaliacao--;
+            localStorage.setItem("planos", JSON.stringify(planos));
+            renderPlanos();
+          };
+
+          const avaliarDiv = document.createElement("div");
+          avaliarDiv.className = "avaliar";
+          avaliarDiv.appendChild(btnMais);
+          avaliarDiv.appendChild(btnMenos);
+          div.appendChild(avaliarDiv);
+        }
+
+        container.appendChild(div);
+      });
+    }
+
+    renderPlanos();
+  </script>
+</body>
+</html>

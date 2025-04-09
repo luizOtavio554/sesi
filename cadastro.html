@@ -1,0 +1,39 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro SESI</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 30px; text-align: center; }
+    .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Acesso SESI</h2>
+    <input type="text" id="nome" placeholder="Nome completo">
+    <select id="cargo">
+      <option value="professor">Professor</option>
+      <option value="coordenador">Coordenador</option>
+    </select>
+    <button onclick="acessarSistema()">Entrar</button>
+  </div>
+
+  <script>
+    function acessarSistema() {
+      const nome = document.getElementById('nome').value.trim();
+      const cargo = document.getElementById('cargo').value;
+
+      if (!nome) return alert("Digite seu nome");
+
+      localStorage.setItem("usuario", JSON.stringify({ nome, cargo }));
+
+      if (cargo === "coordenador") {
+        window.location.href = "planos.html";
+      } else {
+        window.location.href = "voz.html";
+      }
+    }
+  </script>
+</body>
+</html

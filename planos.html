@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Planos de Aula da Comunidade</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.0.2/docx.umd.min.js"></script>
+  <style>
+    body { font-family: Arial; background: #f0f2f5; padding: 20px; }
+    .plano {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      margin-bottom: 20px;
+    }
+    .autor { font-weight: bold; color: #2a61d6; }
+    .btn {
+      margin-top: 10px;
+      padding: 8px 15px;
+      cursor: pointer;
+      background: #2a61d6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Planos de Aula da Comunidade</h2>
+  <div id="listaPlanos"></div>
+
+  <script>
+    const planos = JSON.parse(localStorage.getItem("planos") || "[]");
+
+    function renderizarPlanos() {
+      const container = document.getElementById("listaPlanos");
+      container.innerHTML = "";
+
+      planos.forEach((plano, index) => {
+        const div = document.createElement("div");
+        div.className = "plano";
+
+        div.innerHTML = `
+          <div class="autor">Autor: ${plano.autor}</div>
+          <p>${plano.conteudo}</p>
+          <button class="btn" onclick="baixarPlano(${index})">📄 Baixar no Word</button>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    async function baixarPlano(index) {
+      const { Document, Packer, Paragraph, TextRun } = window.docx;
+      const plano = planos[index];
+
+      const doc = new Document({
+        sections: [{
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Plano de Aula`,
+                  bold: true,
+                  size: 32
+                }),
+              ]
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `Autor: ${plano.autor}`,
+                  italics: true,
+                  size: 24
+                }),
+              ]
+            }),
+            new Paragraph(""),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: plano.conteudo,
+                  size: 24
+                }),
+              ]
+            })
+          ]
+        }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `plano_${plano.autor.replace(/\s+/g, "_")}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    renderizarPlanos();
+  </script>
+</body>
+</html>
